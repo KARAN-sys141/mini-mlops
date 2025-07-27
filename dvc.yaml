@@ -1,0 +1,58 @@
+stages:
+  data_ingestion:
+    cmd: python src/data/data_ingestion.py
+    deps:
+      - src/data/data_ingestion.py
+      - params.yaml
+    outs:
+      - data/raw
+    params:
+      - data_ingestion.dataset_url
+
+  data_preprocessing:
+    cmd: python src/data/data_preprocessing.py
+    deps:
+      - src/data/data_preprocessing.py
+      - data/raw/train.csv
+      - params.yaml
+    outs:
+      - data/processed
+    params:
+      - data_preprocessing.test_size
+
+  feature_engineering:
+    cmd: python src/features/feature_engineering.py
+    deps:
+      - src/features/feature_engineering.py
+      - data/processed/train.csv
+      - params.yaml
+    outs:
+      - artifacts/features
+    params:
+      - feature_engineering.max_features
+
+  model_building:
+    cmd: python src/model/model_building.py
+    deps:
+      - src/model/model_building.py
+      - artifacts/features/X_train.npz
+      - artifacts/features/y_train.npy
+      - params.yaml
+    outs:
+      - artifacts/model/model.pkl
+    params:
+      - model.C
+      - model.penalty
+      - model.solver
+      - model.random_state
+
+  model_evaluation:
+    cmd: python src/model/model_evaluation.py
+    deps:
+      - src/model/model_evaluation.py
+      - artifacts/features/X_test.npz
+      - artifacts/features/y_test.npy
+      - artifacts/model/model.pkl
+      - params.yaml
+    metrics:
+      - artifacts/metrics/metrics.json

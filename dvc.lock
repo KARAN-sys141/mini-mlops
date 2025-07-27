@@ -1,0 +1,128 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python src/data/data_ingestion.py
+    deps:
+    - path: params.yaml
+      hash: md5
+      md5: 1a4e0d639df6cc90e543868f9e49d172
+      size: 298
+    - path: src/data/data_ingestion.py
+      hash: md5
+      md5: 0b547cbc52f6d31f69630815d87be18a
+      size: 2095
+    params:
+      params.yaml:
+        data_ingestion.dataset_url: https://raw.githubusercontent.com/campusx-official/jupyter-masterclass/main/tweet_emotions.csv
+    outs:
+    - path: data/raw
+      hash: md5
+      md5: ef14710595d07ef6e1ac587c252dcaac.dir
+      size: 3328220
+      nfiles: 2
+  data_preprocessing:
+    cmd: python src/data/data_preprocessing.py
+    deps:
+    - path: data/raw/train.csv
+      hash: md5
+      md5: 7139d8b60943c47aac4ef2b284de5dc3
+      size: 2662627
+    - path: params.yaml
+      hash: md5
+      md5: 1a4e0d639df6cc90e543868f9e49d172
+      size: 298
+    - path: src/data/data_preprocessing.py
+      hash: md5
+      md5: b19ff31f11d44397cd921d0cb6d9b707
+      size: 3167
+    params:
+      params.yaml:
+        data_preprocessing.test_size: 0.2
+    outs:
+    - path: data/processed
+      hash: md5
+      md5: 5b50ed3afd94f72ad1ff55457d8b4d34.dir
+      size: 2317672
+      nfiles: 2
+  feature_engineering:
+    cmd: python src/features/feature_engineering.py
+    deps:
+    - path: data/processed/train.csv
+      hash: md5
+      md5: bf868728d9e00533f955267f7a23b795
+      size: 1853756
+    - path: params.yaml
+      hash: md5
+      md5: 1a4e0d639df6cc90e543868f9e49d172
+      size: 298
+    - path: src/features/feature_engineering.py
+      hash: md5
+      md5: 3a59b19c50338efb5b239ad39573399f
+      size: 2844
+    params:
+      params.yaml:
+        feature_engineering.max_features: 10000
+    outs:
+    - path: artifacts/features
+      hash: md5
+      md5: c1ae7ca9fec55715139e218a6dc9be27.dir
+      size: 935723
+      nfiles: 5
+  model_building:
+    cmd: python src/model/model_building.py
+    deps:
+    - path: artifacts/features/X_train.npz
+      hash: md5
+      md5: dc8bf2baf62ae37145ff72480c977183
+      size: 460280
+    - path: artifacts/features/y_train.npy
+      hash: md5
+      md5: 06b8620df6e696e41fea1c3de44a9b9d
+      size: 64415
+    - path: params.yaml
+      hash: md5
+      md5: 1a4e0d639df6cc90e543868f9e49d172
+      size: 298
+    - path: src/model/model_building.py
+      hash: md5
+      md5: bd27330db67f6e67e70333ba26cf8df4
+      size: 1994
+    params:
+      params.yaml:
+        model.C: 1.0
+        model.penalty: l2
+        model.random_state: 42
+        model.solver: liblinear
+    outs:
+    - path: artifacts/model/model.pkl
+      hash: md5
+      md5: 4283c5b6deaacce4609de71fc8522dc1
+      size: 1041275
+  model_evaluation:
+    cmd: python src/model/model_evaluation.py
+    deps:
+    - path: artifacts/features/X_test.npz
+      hash: md5
+      md5: 6290360570428ac4b6aae3ef66e0b737
+      size: 110142
+    - path: artifacts/features/y_test.npy
+      hash: md5
+      md5: d28cba036b26d5b26c1a22b30f6e0ae1
+      size: 16383
+    - path: artifacts/model/model.pkl
+      hash: md5
+      md5: 4283c5b6deaacce4609de71fc8522dc1
+      size: 1041275
+    - path: params.yaml
+      hash: md5
+      md5: 1a4e0d639df6cc90e543868f9e49d172
+      size: 298
+    - path: src/model/model_evaluation.py
+      hash: md5
+      md5: 64a71afd17b9ee11f9295c2a2a671b87
+      size: 2798
+    outs:
+    - path: artifacts/metrics/metrics.json
+      hash: md5
+      md5: 87c6bf0650d0f9fa13e5011a0c86d733
+      size: 153

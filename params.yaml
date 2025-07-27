@@ -1,0 +1,14 @@
+data_ingestion:
+  dataset_url: "https://raw.githubusercontent.com/campusx-official/jupyter-masterclass/main/tweet_emotions.csv"
+
+data_preprocessing:
+  test_size: 0.2
+
+feature_engineering:
+  max_features: 10000
+
+model:
+  C: 1.0
+  penalty: "l2"
+  solver: "liblinear"
+  random_state: 42
